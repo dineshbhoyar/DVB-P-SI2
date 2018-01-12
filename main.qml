@@ -7,19 +7,26 @@ import QtQuick.Dialogs 1.2
 //import Qt.labs.platform 1.0
 
 ApplicationWindow {
+    id:app
     visible: true
-    x:50
-    y:50
     width: 640
-    height: 480
-    minimumWidth:apptoolbar.implicitWidth
+    height: 500
+
+    //app window can not shrink less than this
+    minimumWidth:640
+    minimumHeight: 500
+
+    property int margin: 4
     property string fileSelected: appfiledialog.fileUrl
     onFileSelectedChanged:   console.log('file selected ' + appfiledialog.fileUrl)
-    title: qsTr("DVB Parser")
+
+    //app title
+    title: qsTr("DVB-P-SI2")
+
     MessageDialog{
         id:aboutDialog
-        title: "About"
-        text: "Author: Dinesh M. Bhoyar  <br> email:- bhoyar.dinesh@gmail.com"
+        title: qsTr("About")
+        text: qsTr("Author: Dinesh M. Bhoyar  <br> email:- bhoyar.dinesh@gmail.com")
         onAccepted: {
             console.log(" ok ")
         }
@@ -27,8 +34,8 @@ ApplicationWindow {
 
     MessageDialog{
         id:versionDialog
-        title: "Version"
-        text: "Version - 1.0.0"
+        title: qsTr("Version")
+        text: qsTr("Version - 1.0.0")
         onAccepted: {
             console.log(" ok ")
         }
@@ -36,33 +43,25 @@ ApplicationWindow {
     menuBar: MenuBar{
         id:appmenubar
         Menu{
-            title: "File"
+            title: qsTr("&File")
 
             MenuItem {
-                text:"Open CSV"
-                onTriggered:{
-                    appfiledialog.nameFilters=["CSV Files (*.csv)"," All Files (*)"]
-                    appfiledialog.open()
-                    //fileSelected=appfiledialog.fileUrl
-                }
-            }
-
-            MenuItem {
-                text:"Open TS"
+                text:qsTr("Open TS")
                 onTriggered:{
                     appfiledialog.nameFilters=["TS Files (*.ts)"," All Files (*)"]
                     appfiledialog.open()
                 }
             }
+            MenuSeparator{}
             MenuItem {
-                text:"Open DVBDump"
+                text:qsTr("Open DVBDump")
                 onTriggered:{
                     appfiledialog.nameFilters=["Dump Files (*.dump)"," All Files (*)"]
                     appfiledialog.open()
                 }
             }
             MenuItem {
-                text:"Open DVBDump(folder)"
+                text:qsTr("Open DVBDump(folder)")
                 onTriggered:{
                     appfiledialog.nameFilters=[" All Files (*)"]
                     appfiledialog.selectFolder = true
@@ -71,36 +70,45 @@ ApplicationWindow {
                     appfiledialog.open()
                 }
             }
+            MenuSeparator{}
+            MenuItem {
+                text:qsTr("Open CSV")
+                onTriggered:{
+                    appfiledialog.nameFilters=["CSV Files (*.csv)"," All Files (*)"]
+                    appfiledialog.open()
+                    //fileSelected=appfiledialog.fileUrl
+                }
+            }
             //            MenuItem{text:"Close"}
             MenuSeparator{}
             MenuItem{
-                text:"Quit"
+                text:qsTr("&Exit")
                 onTriggered: Qt.quit()
             }
 
         }
 
         Menu{
-            title: "Config"
+            title: qsTr("&Config")
             MenuItem{
-                text: "Enable NIT Other"
+                text: qsTr("Enable NIT Other")
                 checkable: true
                 checked:true
             }
             MenuItem{
-                text:"Enable SDT Other"
+                text:qsTr("Enable SDT Other")
                 checkable: true
                 checked:true
             }
         }
         Menu{
-            title: "Help"
+            title: qsTr("&Help")
             MenuItem{
-                text:"About"
+                text:qsTr("About")
                 onTriggered: aboutDialog.open()
             }
             MenuItem{
-                text:"Version"
+                text:qsTr("Version")
                 onTriggered: versionDialog.open()
             }
         }
@@ -113,35 +121,21 @@ ApplicationWindow {
     }
     toolBar: ToolBar{
         id:apptoolbar
+        KeyNavigation.tab: appFreqListView
         RowLayout{
-            width: parent.width
+            anchors.fill: parent
             ToolButton{
-                text:"Open"
+                text:qsTr("Play")
                 iconSource: "images/play.png"
                 onClicked: {
                     console.log( text+" button pressed  processing file ",fileSelected);
                     csv.setSource(fileSelected);
                 }
             }
-            //            ToolButton{
-            //                text:"Save"
-            //                iconSource: "images/filesave.png"
-            //                onClicked: console.log( text+" button pressed ")
-            //            }
-            //            ToolButton{
-            //                text:"Close"
-            //                iconSource: "images/editpaste.png"
-            //                onClicked: console.log( text+" button pressed ")
-            //            }
-            //            Slider{
-            //                Layout.fillWidth: true
-            //            }
-            //            TextField{
 
-            //            }
         }
     }
-
+    /*
     Rectangle{
         id:appContent
         width: contentItem.maximumWidth
@@ -179,9 +173,9 @@ ApplicationWindow {
                     delegate: Rectangle {
                         width:freqView.width * .8
                         height: freqView.height/10
-                       // border.color: "blue"
-                       // radius: height/10
-                       // color: "lightsteelblue"
+                        // border.color: "blue"
+                        // radius: height/10
+                        // color: "lightsteelblue"
                         function getImgSource(idx)
                         {
                             if(idx ==1)
@@ -372,11 +366,11 @@ ApplicationWindow {
                 height: appContent.height -3
                 radius: height/20
                 border.color: "green"
-            /*    anchors.top: appSplitview.bottom
-                anchors.left: appContent.left
-                anchors.leftMargin: 3
-                anchors.topMargin: 3
-*/
+                //anchors.top: appSplitview.bottom
+                //anchors.left: appContent.left
+                //anchors.leftMargin: 3
+                //anchors.topMargin: 3
+
                 TextArea {
                     wrapMode: Text.WordWrap
                     anchors.fill: parent
@@ -388,12 +382,233 @@ ApplicationWindow {
                 }
             }
         }
+    }*/
+    ColumnLayout{
+        id:appRegion
+        anchors.fill: parent
+        anchors.margins: margin
+        GroupBox{
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            width: ((appRegion.width)-(margin*2))
+            height: ((appRegion.height/2)-(margin*2))
+            id:groupOne
+            title: "Service Provider "
+
+            RowLayout{
+                id:appListLayout
+                spacing: 10
+                anchors.fill: parent
+
+                //using List view insted to begain with
+
+                Rectangle{
+                    id:rect1
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    anchors.margins: margin
+                    radius: 5
+                    ListView{
+                        id:appFreqListView
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        orientation: Qt.Vertical
+                        visible: true
+                        x:margin
+                        y:margin
+                        width: (rect1.width  - (margin*2))
+                        height:  (rect1.height - (margin*2))
+                        anchors.margins: margin
+
+                        highlight: Rectangle{ color: "lightsteelblue" ;radius:5}
+                        focus: true
+                        //accept focus via tab button
+                        activeFocusOnTab: true
+                        //to enable updown nevigation
+                        keyNavigationEnabled: true
+
+                        onFocusChanged: {
+                            console.log("focuse changed")
+                        }
+
+                        model: tParams
+                        delegate:
+                            Component{
+                            Item {
+                                id:listElementFreq
+                                width: appFreqListView.width
+                                height:  20
+                                Column{
+                                    Text {
+                                        x:margin
+                                        id:lstItem
+                                        text: qsTr(frequency)
+                                        color: listElementFreq.ListView.isCurrentItem ? "red" : "black"
+                                    }
+                                }
+                                MouseArea {
+                                    id: rect_area1
+                                    z: 1
+                                    hoverEnabled: false
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        console.log(" freq clicked")
+                                        appFreqListView.currentIndex = index
+
+                                        switch(type){
+                                        case 1:
+
+                                            appTextArea.text ="<b> Frequency : </b><i>"+frequency+" Mhz "
+                                                    +"</i><br><b> QAM : </b><i>"+ qam +
+                                                    "</i><br><b> SymbolRate : </b><i> "+symbolrate+" Msymbol/s"+
+                                                    "</i><br><b> FEC_inner : </b><i> "+fec_inner+
+                                                    "</i><br><b> FEC_outer : </b><i> "+fec_outer+"</i>"
+                                            break;
+                                        case 2:
+
+                                            appTextArea.text ="<b> Frequency : </b><i>"+frequency+" Hz "
+                                                    +"</i><br><b> Bandwidth : </b><i>"+ bandwidth +
+                                                    "</i><br><b> Time_Slicing_indicator : </b><i> "+time_slicing_indicator+
+                                                    "</i><br><b> MPE_FEC_indicator : </b><i> "+MPE_FEC_indicator+
+                                                    "</i><br><b> constellation : </b><i> "+constellation+
+
+                                                    "</i><br><b> hierarchy_information : </b><i> "+hierarchy_information+
+                                                    "</i><br><b> Code_rate_HP_stream : </b><i> "+code_rate_HP_stream+
+                                                    "</i><br><b> Code_rate_LP_stream : </b><i> "+code_rate_LP_stream+
+                                                    "</i><br><b> guard_interval : </b><i> "+guard_interval+
+                                                    "</i><br><b> transmission_mode : </b><i> "+transmission_mode+
+                                                    "</i><br><b> other_frequency_flag : </b><i> "+other_frequency_flag+
+                                                    "</i>"
+                                            break;
+                                        case 3:
+
+                                            appTextArea.text ="<b> Frequency : </b><i>"+frequency+" Ghz "
+                                                    +"</i><br><b> orbital_position : </b><i>"+orbital_position +"°"+
+                                                    "</i><br><b> SymbolRate : </b><i> "+symbolrate+" Msymbol/s"+
+                                                    "</i><br><b> FEC_inner : </b><i> "+fec_inner+
+                                                    "</i><br><b> west_east_flag : </b><i> "+west_east_flag+
+                                                    "</i><br><b> polarization : </b><i> "+polarization+
+                                                    "</i><br><b> roll_offl : </b><i> "+roll_offl+
+                                                    "</i><br><b> modulation_system : </b><i> "+modulation_system+
+                                                    "</i><br><b> modulation_type : </b><i> "+modulation_type+"</i>"
+                                            break;
+                                        default:
+                                            break;
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Rectangle{
+                    id:rect2
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    anchors.margins: margin
+                    radius: 5
+                    ListView{
+                        id:appChannelListView
+                        //     Layout.fillWidth: true
+                        //   Layout.fillHeight: true
+                        orientation: Qt.Vertical
+                        visible: true
+
+                        width: ((appListLayout.width /2) - (margin*2))
+                        height:  ((appListLayout.height) - (margin*2))
+                        anchors.margins: margin
+
+                        highlight: Rectangle{ color: "lightsteelblue" ;radius:5}
+                        focus: true
+
+                        model: tChannel
+                        delegate: Component{
+                            Item {
+                                id:listElementChann
+                                width: appChannelListView.width
+                                height: 20
+                                Column{
+                                    Text {
+                                        color: listElementChann.ListView.isCurrentItem ? "red" : "black"
+                                        id:lstItem
+                                        text: qsTr(cname)
+                                    }
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        appChannelListView.currentIndex = index
+
+                                        appTextArea.text = "<b> Chnnel name : </b><i>"+cname+
+                                                //"</i><br><b> QAM : </b><i>"+qam+
+                                                "</i><br><b> Frequency :  </b><i>"+frequency+
+                                                // "</i><br><b> Symbol Rate :  </b><i>"+symbolrate+
+                                                //  "</i><br><b> FEC_inner :  </b><i>"+fec_inner+
+                                                // "</i><br><b> FEC_outer :  </b><i>"+fec_outer+
+                                                "</i><br><b> ServiceID :  </b><i>"+progid+
+                                                "</i><br><b> Audio PID :  </b><i>"+apid+
+                                                "</i><br><b> Video PID :  </b><i> "+vpid+
+                                                "</i><br><b> R PID :  </b><i> "+rpid+
+                                                "</i><br><b> PMT PID :  </b><i> "+pmt+
+                                                "</i><br><b> Audio Type :  </b><i> "+atype+
+                                                "</i><br><b> Video Type :  </b><i> "+vtype+
+                                                "</i><br><b> Sequence ID :  </b><i> "+sid+
+                                                "</i><br><b> EPG Available :  </b><i> "+epg+
+                                                "</i><br><b> Stream ID :  </b><i> "+streamid+
+                                                "</i><br><b> Emcripted :  </b><i>  "+encrypted+
+                                                "</i><br><b> Network ID :  </b><i> "+netwotkid+
+                                                "</i><br><b> Language :  </b><i> "+lang+
+                                                "</i><br><b> Channel state :  </b><i> "+s_state+
+                                                "</i><br><b> Channel description :  </b><i> "+s_desc
+                                    }
+                                }
+
+                                ///
+                            }
+                        }
+                        ///
+                    }
+                }
+            }
+        }
+        GroupBox{
+            id:groupTwo
+            title: qsTr("Description")
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            RowLayout{
+                id:appTextLayout
+                spacing: 10
+                anchors.fill: parent
+                //anchors.margins: margin
+                TextArea{
+                    id:appTextArea
+                    anchors.fill: parent
+                    readOnly: true
+                    textFormat:TextEdit.RichText
+                    text: "select frequency or channel list to see details "
+                }
+            }
+        }
     }
+
     statusBar:StatusBar {
+        id:appStatusBar
         RowLayout {
             anchors.fill: parent
-            //ProgressBar { value: 10}
-            Label { text: appfiledialog.fileUrl }
+            spacing: 10
+            anchors.margins: margin
+            Label {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                text: "Ready..."
+            }
+            ProgressBar {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                value: 10
+            }
         }
     }
     /*MouseArea {

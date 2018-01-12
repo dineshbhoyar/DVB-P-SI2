@@ -41,6 +41,7 @@ class DVBDumpReader:public QObject,public FileParser{
     std::map<uint16_t,ProgrammeInfo> data;
     std::map<double,FreqInfo> fdata;
     QFile toOpen;
+    std::string NetworkName="unknown";
 
 public:
     DVBDumpReader();
@@ -50,6 +51,8 @@ public:
     void Parse() ;
     std::map<uint16_t,ProgrammeInfo>& Get();
     std::map<double,FreqInfo>& GetFMap();
+    std::string& GetNetworkName(){ return NetworkName;};
+
     void ParseMemory(unsigned char*buff, uint32_t len, FileParser*bptr);
     void ParseFile();
 signals:

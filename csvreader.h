@@ -27,6 +27,7 @@ class CSVReader:public FileParser
 {
     std::map <uint16_t,ProgrammeInfo> data;
     std::map <double,FreqInfo> fdata;
+    std::string NetworkName="unknown";
     QFile toOpen;
 public:
     CSVReader();
@@ -35,6 +36,7 @@ public:
     void Parse() ;
     std::map<uint16_t,ProgrammeInfo>& Get();
     std::map<double,FreqInfo>& GetFMap();
+    std::string& GetNetworkName(){ return NetworkName;};
 };
 
 #endif // CSVREADER_H

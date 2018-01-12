@@ -33,7 +33,7 @@
 
 
 enum Tuner_Type{
-    CABLE,
+    CABLE=1,
     SATELATE,
     TERRESTRIAL
 };

@@ -40,7 +40,7 @@ std::map<double,FreqInfo>& DVBDumpReader::GetFMap(){
     for (auto & val: fdata){
         qDebug()<<" DVBDumpReader freq "<< val.first <<" and freq "<< val.second.Frequency;
     }
-        return fdata;
+    return fdata;
 }
 
 static unsigned char buff[4096];
@@ -118,6 +118,16 @@ void DVBDumpReader::ParseMemory(unsigned char*buff, uint32_t len, FileParser *bp
         APP_UTILS::NIT_Container& cnt = (table_id==NIT_TABLEID_ACTUAL)?container.nitActual:container.nitOther;
         container.nitActual.Parse(buff,len,desciptor,container);
         for (auto  &ts_descriptor : container.nitActual.ts_descriptor ){
+
+            if(ts_descriptor.second.network_name.size()){
+                std::cout << "network name " <<ts_descriptor.second.network_name<<std::endl;
+                if(NetworkName.size()){
+                    NetworkName.append("-");
+                    NetworkName.append(ts_descriptor.second.network_name);
+                }else{
+                    NetworkName.append(ts_descriptor.second.network_name);
+                }
+            }
             FreqInfo fInfo {};
             //qDebug() << ts_descriptor.first;
             if(ts_descriptor.second.cds.frequency !=0){

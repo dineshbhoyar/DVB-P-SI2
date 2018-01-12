@@ -1,0 +1,18 @@
+UI
+0. finalize layouts see qtquick layout example
+1. use TreeView insted of ListView
+2. On focus colorchange should per element should be managed
+3. find out more dvb info to represnt in ui such as instant bitrate ,epg,tot,tdt etc
+4. Add to do ,auther infor properly
+5. add logo to application(should be visisble in system tray).
+6. qsetting support for saving position,folder path
+ 
+Backend
+1. make backgrougd code independant from UI models, figure out ways to isolate boths in qt and qtquick
+2. make classess to read and write data to and from resources(ts file to csv , dump to csv etc)  
+3. how to interface with linuxdvb stack fro actual tuner interface
+
+Code orgnizer
+
+separate source code and ui code
+create class per reponcibility

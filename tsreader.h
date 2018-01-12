@@ -61,6 +61,8 @@ class TSReader:public QObject,public FileParser{
     QFile toOpen;
     std::map<uint16_t,bool> supportedPID;
     std::map<uint16_t,SectionData> sectionParser;
+    //std::string NetworkName="unknown";
+
     void SaveSecPayload(uint16_t, unsigned char* , int);
 
     //std::map<uint16_t,ProgrammeInfo> data;
@@ -71,6 +73,7 @@ public:
     void Parse() ;
     std::map<uint16_t,ProgrammeInfo>& Get();
     std::map<double,FreqInfo>& GetFMap();
+    std::string& GetNetworkName(){ return patDump.GetNetworkName();};
     void RegisterPid(uint16_t ,callbackFn );
     DVBDumpReader patDump{};
 signals:

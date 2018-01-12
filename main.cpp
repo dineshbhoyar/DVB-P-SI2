@@ -18,7 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+//for native ui
+#if QT_NATIVE_UI
+#include "nativeui/mainwindow.h"
+#include <QApplication>
+#endif
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -29,6 +33,13 @@
 #include "csvdata.h"
 int main(int argc, char *argv[])
 {
+
+#if QT_NATIVE_UI
+    QApplication app(argc, argv);
+    MainWindow w;
+    w.show();
+
+#else
     QGuiApplication app(argc, argv);
     QScopedPointer<csvdata> data (new csvdata);
     TuningParametrModel tParams;
@@ -88,26 +99,15 @@ int main(int argc, char *argv[])
 //                         lst.at(18)<<lst.at(19);
 //        }
 //    }
-#if 1
     QQmlApplicationEngine engine;
+
+    engine.rootContext()->setContextProperty("csv",data.data());
+    engine.rootContext()->setContextProperty("tParams",&data->tParams);
+    engine.rootContext()->setContextProperty("tChannel",&data->tChannel);
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
-    engine.rootContext()->setContextProperty("csv",data.data());
-    /*FilterSortModel filterModel;
-     filterModel.setSourceModel(&data->tParams);
-     filterModel.setFilterRole(Qt::UserRole+2);
-     filterModel.setSortRole(Qt::UserRole+2);*/
-    engine.rootContext()->setContextProperty("tParams",&data->tParams);
-    engine.rootContext()->setContextProperty("tChannel",&data->tChannel);
-#else
-    QQuickView view;
-    view.setResizeMode(QQuickView::SizeRootObjectToView);
-    QQmlContext *ctx = view.rootContext();
-    ctx->setContextProperty("csv",data.data());
-    ctx->setContextProperty("tParams",&tParams);
-    view.setSource(QUrl(QStringLiteral("qrc:/main.qml")));
-    view.show();
 #endif
     return app.exec();
 }

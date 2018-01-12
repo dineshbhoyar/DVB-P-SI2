@@ -44,6 +44,7 @@ void csvdata::setSource(QString filepath)
             data = parser.Get();
             fdata.clear();
             fdata = parser.GetFMap();
+            NetworkName.fromStdString(  parser.GetNetworkName());
 
         }else if( path.fileName().endsWith(".ts",Qt::CaseInsensitive)){
             TSReader parser{};
@@ -57,7 +58,7 @@ void csvdata::setSource(QString filepath)
             //            disconnect(&parser,&TSReader::FreqInstance,this,&csvdata::FreqInstanceSlot);
             fdata.clear();
             fdata = parser.GetFMap();
-
+            NetworkName.fromStdString(  parser.GetNetworkName());
         }else if ( path.fileName().endsWith(".dump",Qt::CaseInsensitive) ){
             DVBDumpReader parser{};
             parser.Set(path);
@@ -66,7 +67,7 @@ void csvdata::setSource(QString filepath)
             data=parser.Get();
             fdata.clear();
             fdata = parser.GetFMap();
-
+            NetworkName.fromStdString(  parser.GetNetworkName());
         }else{
             QUrl url (filepath);
             QFileInfo finfo(url.path().replace("\\\\\\",""));
@@ -78,7 +79,7 @@ void csvdata::setSource(QString filepath)
                 fdata.clear();
                 fdata = parser.GetFMap();
                 data=parser.Get();
-
+                NetworkName.fromStdString(  parser.GetNetworkName());
             }else{
                 qDebug() << "file not handled ";
             }
@@ -259,7 +260,7 @@ void csvdata::FreqInstanceSlot(FreqInfo f)
 
 }
 
-TuningParametrModel::TuningParametrModel(QObject *parent): QAbstractListModel{parent}
+TuningParametrModel::TuningParametrModel(QObject *parent): QAbstractItemModel{parent}
 {
 
 }
@@ -286,6 +287,24 @@ int TuningParametrModel::rowCount(const QModelIndex &parent) const
     return m_tuningparms.count();
 
 }
+QModelIndex TuningParametrModel::index(int row, int column, const QModelIndex &parent) const
+{
+    if(!parent.isValid()) // we should return a valid QModelIndex for root elements (whose parent
+            return this->createIndex(row,column); // is invalid) only, because our model is flat
+        else
+            return QModelIndex();
+}
+
+QModelIndex TuningParametrModel::parent(const QModelIndex &child) const
+{
+ Q_UNUSED(child);
+    return QModelIndex();
+}
+int TuningParametrModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return 1;
+}
 
 QVariant TuningParametrModel::data(const QModelIndex &index, int role) const
 {
@@ -295,6 +314,7 @@ QVariant TuningParametrModel::data(const QModelIndex &index, int role) const
     const TuningParametr &tparams = m_tuningparms[index.row()];
     switch (role)
     {
+    case Qt::DisplayRole: return tparams.freq();break;
     case Type : return tparams.type();break;
     case QAM: return tparams.qam();break;
     case Frequency: return tparams.freq();break;
@@ -389,7 +409,7 @@ QVariant ChannelInfoModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     const ChannelInfo &cparams = m_channelinfo[index.row()];
-    if (role == Name)
+    if (role == Name || role == Qt::DisplayRole)
         return cparams.cname();
     else if (role == QAM)
         return cparams.qam();

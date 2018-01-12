@@ -28,12 +28,16 @@
 #include <QString>
 #include <QUrl>
 #include <QAbstractListModel>
+#include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 #include <functional>
 #include <memory>
 #include <exception>
 #include <thread>
 #include "fileparser.h"
+
+
+
 ///usr/lib/x86_64-linux-gnu/Qt5.9.1/Examples/Qt-5.9.1/quick/models/abstractitemmodel/model.cpp
 class TuningParametr
 {
@@ -136,39 +140,44 @@ private:
     QString m_modulation_type;
 };
 
-class TuningParametrModel:public QAbstractListModel{
+//http://doc.qt.io/qt-5/qtwidgets-itemviews-simpletreemodel-example.html for refrance
+//use a tree model to represent data in application
+enum TuningParametrRole{
+    Type=Qt::UserRole+1,
+    QAM=Type+1,
+    Frequency=QAM+1,
+    SymbolRate=Frequency+1,
+    FEC_INNER=SymbolRate+1,
+    FEC_OUTER=FEC_INNER+1,
+    Bandwidth=FEC_OUTER+1,
+    Priority=Bandwidth+1,
+    Time_Slicing_indicator=Priority+1,
+    MPE_FEC_indicator=Time_Slicing_indicator+1,
+    Constellation=MPE_FEC_indicator+1,
+    Hierarchy_information=Constellation+1,
+    Code_rate_HP_stream=Hierarchy_information+1,
+    Code_rate_LP_stream=Code_rate_HP_stream+1,
+    Guard_interval=Code_rate_LP_stream+1,
+    Transmission_mode=Guard_interval+1,
+    Other_frequency_flag=Transmission_mode+1,
+    Orbital_position=Other_frequency_flag+1,
+    West_east_flag=Orbital_position+1,
+    Polarization=West_east_flag+1,
+    Roll_off=Polarization+1,
+    Modulation_system=Roll_off+1,
+    Modulation_type=Modulation_system+1
+};
+class TuningParametrModel:public /*QAbstractListModel*/QAbstractItemModel{
     Q_OBJECT
 public:
-    enum TuningParametrRole{
-        Type=Qt::UserRole+1,
-        QAM=Type+1,
-        Frequency=QAM+1,
-        SymbolRate=Frequency+1,
-        FEC_INNER=SymbolRate+1,
-        FEC_OUTER=FEC_INNER+1,
-        Bandwidth=FEC_OUTER+1,
-        Priority=Bandwidth+1,
-        Time_Slicing_indicator=Priority+1,
-        MPE_FEC_indicator=Time_Slicing_indicator+1,
-        Constellation=MPE_FEC_indicator+1,
-        Hierarchy_information=Constellation+1,
-        Code_rate_HP_stream=Hierarchy_information+1,
-        Code_rate_LP_stream=Code_rate_HP_stream+1,
-        Guard_interval=Code_rate_LP_stream+1,
-        Transmission_mode=Guard_interval+1,
-        Other_frequency_flag=Transmission_mode+1,
-        Orbital_position=Other_frequency_flag+1,
-        West_east_flag=Orbital_position+1,
-        Polarization=West_east_flag+1,
-        Roll_off=Polarization+1,
-        Modulation_system=Roll_off+1,
-        Modulation_type=Modulation_system+1
-    };
+
     TuningParametrModel(QObject*parent=0);
     void addTuningParametr(const TuningParametr &params);
     void clear();
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
-
+    QModelIndex index(int row, int column, const QModelIndex &parent) const;
+    QModelIndex parent(const QModelIndex &child) const;
+    int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
 protected:
@@ -289,6 +298,7 @@ class csvdata : public QObject
 public:
     ChannelInfoModel tChannel;
     TuningParametrModel tParams;
+    QString NetworkName;
     explicit csvdata(QObject *parent = nullptr);
 
     Q_INVOKABLE void setSource(QString filepath);
