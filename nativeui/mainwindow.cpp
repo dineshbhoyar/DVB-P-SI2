@@ -41,7 +41,7 @@ void MainWindow::on_actionOpen_TS_triggered()
     qDebug() << furl.fileName();
     label->setText("Processing .....");
     ptr->setSource(furl.path().replace("\\\\\\",""));
-    if(ptr->NetworkName.size())
+  if(ptr->NetworkName.size())
     ui->groupBox->setTitle(ptr->NetworkName);
     //label->setText("Ready ....");
 }

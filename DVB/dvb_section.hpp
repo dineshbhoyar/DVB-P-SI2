@@ -520,7 +520,8 @@ struct NIT_Descriptor {
 
 struct NIT_Container {
     std::map<uint16_t, versions> version; //version information of bouquet
-    std::map<uint16_t, NIT_Descriptor> nit_descriptor;
+    //std::map<uint16_t, NIT_Descriptor> nit_descriptor;
+    NIT_Descriptor nit_descriptor;
     std::map<NIT_Pirmary_Key, NIT_Descriptor> ts_descriptor;
     uint32_t private_data_specifier;
     bool isFristLoop;
@@ -536,7 +537,7 @@ struct NIT_Container {
         isFristLoop=true;
         private_data_specifier=0;
         version.clear();
-        nit_descriptor.clear();
+        //nit_descriptor.clear();
         ts_descriptor.clear();
     }
 

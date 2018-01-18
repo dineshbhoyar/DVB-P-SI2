@@ -209,7 +209,19 @@ uint32_t NIT_Container::Parse(unsigned char *buff, uint32_t sectionno, dvb_secti
                     break;
                 }
                 QVariant fdata = dtable.get(des)(des,dlen,container,a);
-
+                switch (des) {
+                case network_name_descriptor:
+                    if(fdata.canConvert<Name>()){
+                        Name name = fdata.value<Name>();
+                        nit_descriptor.network_name = name.name;
+                        qDebug() <<" nit network name " << nit_descriptor.network_name.c_str();
+                    }else{
+                     //   qDebug() << " error for key " << key;
+                    }
+                    break;
+                default:
+                    break;
+                }
                 network_descriptors_length -= 2+dlen;
                 // a.Skip(dlen);
             }

@@ -117,10 +117,15 @@ void DVBDumpReader::ParseMemory(unsigned char*buff, uint32_t len, FileParser *bp
 
         APP_UTILS::NIT_Container& cnt = (table_id==NIT_TABLEID_ACTUAL)?container.nitActual:container.nitOther;
         container.nitActual.Parse(buff,len,desciptor,container);
+        if(container.nitActual.nit_descriptor.network_name.size()){
+
+                NetworkName = container.nitActual.nit_descriptor.network_name;
+
+        }
         for (auto  &ts_descriptor : container.nitActual.ts_descriptor ){
 
             if(ts_descriptor.second.network_name.size()){
-                std::cout << "network name " <<ts_descriptor.second.network_name<<std::endl;
+                std::cout << " dvb_dump network name " <<ts_descriptor.second.network_name<<std::endl;
                 if(NetworkName.size()){
                     NetworkName.append("-");
                     NetworkName.append(ts_descriptor.second.network_name);

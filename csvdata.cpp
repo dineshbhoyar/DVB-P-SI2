@@ -44,8 +44,9 @@ void csvdata::setSource(QString filepath)
             data = parser.Get();
             fdata.clear();
             fdata = parser.GetFMap();
-            NetworkName.fromStdString(  parser.GetNetworkName());
-
+qDebug() <<" got network name " << parser.GetNetworkName().c_str();
+            NetworkName= QString::fromStdString(  parser.GetNetworkName());
+qDebug() <<" NetworkName " << NetworkName;
         }else if( path.fileName().endsWith(".ts",Qt::CaseInsensitive)){
             TSReader parser{};
             parser.Set(path);
@@ -58,7 +59,9 @@ void csvdata::setSource(QString filepath)
             //            disconnect(&parser,&TSReader::FreqInstance,this,&csvdata::FreqInstanceSlot);
             fdata.clear();
             fdata = parser.GetFMap();
-            NetworkName.fromStdString(  parser.GetNetworkName());
+            qDebug() <<" got network name " << parser.GetNetworkName().c_str();
+            NetworkName= QString::fromStdString(  parser.GetNetworkName());
+            qDebug() <<" NetworkName " << NetworkName;
         }else if ( path.fileName().endsWith(".dump",Qt::CaseInsensitive) ){
             DVBDumpReader parser{};
             parser.Set(path);
@@ -67,7 +70,9 @@ void csvdata::setSource(QString filepath)
             data=parser.Get();
             fdata.clear();
             fdata = parser.GetFMap();
-            NetworkName.fromStdString(  parser.GetNetworkName());
+            qDebug() <<" got network name " << parser.GetNetworkName().c_str();
+            NetworkName= QString::fromStdString(  parser.GetNetworkName());
+            qDebug() <<" NetworkName " << NetworkName;
         }else{
             QUrl url (filepath);
             QFileInfo finfo(url.path().replace("\\\\\\",""));
@@ -79,7 +84,8 @@ void csvdata::setSource(QString filepath)
                 fdata.clear();
                 fdata = parser.GetFMap();
                 data=parser.Get();
-                NetworkName.fromStdString(  parser.GetNetworkName());
+                qDebug() <<" got network name " << parser.GetNetworkName().c_str();
+                NetworkName= QString::fromStdString(  parser.GetNetworkName());
             }else{
                 qDebug() << "file not handled ";
             }
