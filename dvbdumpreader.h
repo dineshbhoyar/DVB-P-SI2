@@ -58,6 +58,10 @@ public:
 signals:
     void ChannelsInstance(ProgrammeInfo p);
     void FreqInstance(FreqInfo f);
+    void onNetworkNameChange(QString name);
+    void onPrograsessChange(size_t size);
+    void onStatusChange(QString status);
+
 public slots:
 
 };

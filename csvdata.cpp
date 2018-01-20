@@ -35,7 +35,7 @@ void csvdata::setSource(QString filepath)
 {
     try{
         QUrl path(filepath);
-
+        qDebug() << path.fileName();
         if( path.fileName().endsWith(".csv",Qt::CaseInsensitive)){
             CSVReader parser{};
             parser.Set(path);
@@ -44,12 +44,15 @@ void csvdata::setSource(QString filepath)
             data = parser.Get();
             fdata.clear();
             fdata = parser.GetFMap();
-qDebug() <<" got network name " << parser.GetNetworkName().c_str();
+            qDebug() <<" got network name " << parser.GetNetworkName().c_str();
             NetworkName= QString::fromStdString(  parser.GetNetworkName());
-qDebug() <<" NetworkName " << NetworkName;
+            qDebug() <<" NetworkName " << NetworkName;
         }else if( path.fileName().endsWith(".ts",Qt::CaseInsensitive)){
             TSReader parser{};
             parser.Set(path);
+            connect(&parser,&TSReader::onNetworkNameChange,this,&csvdata::onNetworkNameChangeSlot);
+            connect(&parser,&TSReader::onPrograsessChange,this,&csvdata::onPrograsessChangeSlot);
+            connect(&parser,&TSReader::onStatusChange,this,&csvdata::onStatusChangeSlot);
             parser.Parse();
             data.clear();
             //            connect(&parser,&TSReader::ChannelsInstance,this,&csvdata::ChannelsInstanceSlot);
@@ -62,6 +65,9 @@ qDebug() <<" NetworkName " << NetworkName;
             qDebug() <<" got network name " << parser.GetNetworkName().c_str();
             NetworkName= QString::fromStdString(  parser.GetNetworkName());
             qDebug() <<" NetworkName " << NetworkName;
+            disconnect(&parser,&TSReader::onNetworkNameChange,this,&csvdata::onNetworkNameChangeSlot);
+            disconnect(&parser,&TSReader::onPrograsessChange,this,&csvdata::onPrograsessChangeSlot);
+            disconnect(&parser,&TSReader::onStatusChange,this,&csvdata::onStatusChangeSlot);
         }else if ( path.fileName().endsWith(".dump",Qt::CaseInsensitive) ){
             DVBDumpReader parser{};
             parser.Set(path);
@@ -189,7 +195,16 @@ bool csvdata::dataReady() const
 {
     return dataState;
 }
-
+void csvdata::onNetworkNameChangeSlot(QString name){
+    emit networkNameChange(name);
+};
+void csvdata::onPrograsessChangeSlot(double size){
+    //qDebug()<<" csvdata setting progress " << size;
+    emit prograsessChange(size);
+};
+void csvdata::onStatusChangeSlot(QString status){
+    emit statusChange(status);
+};
 //QAbstractItemModel &csvdata::theModel()
 //{
 
@@ -296,14 +311,14 @@ int TuningParametrModel::rowCount(const QModelIndex &parent) const
 QModelIndex TuningParametrModel::index(int row, int column, const QModelIndex &parent) const
 {
     if(!parent.isValid()) // we should return a valid QModelIndex for root elements (whose parent
-            return this->createIndex(row,column); // is invalid) only, because our model is flat
-        else
-            return QModelIndex();
+        return this->createIndex(row,column); // is invalid) only, because our model is flat
+    else
+        return QModelIndex();
 }
 
 QModelIndex TuningParametrModel::parent(const QModelIndex &child) const
 {
- Q_UNUSED(child);
+    Q_UNUSED(child);
     return QModelIndex();
 }
 int TuningParametrModel::columnCount(const QModelIndex &parent) const
@@ -524,3 +539,5 @@ void FilterSortModel::setSortOrder(bool checked)
         this->sort(Qt::UserRole+2, Qt::AscendingOrder);
     }
 }
+
+

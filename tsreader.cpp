@@ -26,11 +26,17 @@
 TSReader::TSReader(){
     connect(&patDump,&DVBDumpReader::ChannelsInstance,this,&TSReader::ChannelsInstanceSlot);
     connect(&patDump,&DVBDumpReader::FreqInstance,this,&TSReader::FreqInstanceSlot);
+    connect(&patDump,&DVBDumpReader::onNetworkNameChange,this,&TSReader::onNetworkNameChangeSlot);
+    connect(&patDump,&DVBDumpReader::onPrograsessChange,this,&TSReader::onPrograsessChangeSlot);
+    connect(&patDump,&DVBDumpReader::onStatusChange,this,&TSReader::onStatusChangeSlot);
 }
 TSReader::~TSReader(){
 
     disconnect(&patDump,&DVBDumpReader::ChannelsInstance,this,&TSReader::ChannelsInstanceSlot);
     disconnect(&patDump,&DVBDumpReader::FreqInstance,this,&TSReader::FreqInstanceSlot);
+    disconnect(&patDump,&DVBDumpReader::onNetworkNameChange,this,&TSReader::onNetworkNameChangeSlot);
+    disconnect(&patDump,&DVBDumpReader::onPrograsessChange,this,&TSReader::onPrograsessChangeSlot);
+    disconnect(&patDump,&DVBDumpReader::onStatusChange,this,&TSReader::onStatusChangeSlot);
 }
 std::map<uint16_t, ProgrammeInfo> &TSReader::Get(){
     return patDump.Get();
@@ -154,9 +160,17 @@ void TSReader::Parse(){
 
     if(toOpen.open(QIODevice::ReadOnly )){
 
+        qint64     lengthF = toOpen.size();
         while(!toOpen.atEnd()){
 
             uint64_t readByte = toOpen.read((char*)&payload,TS_PACKET_SIZE);
+            qint64 curlen = toOpen.pos();
+            double progress = (double)(curlen*100/lengthF);
+            //qDebug() << " cur pos " << curlen << " total length " << lengthF << "progress " <<progress;
+            //std::cout << " progress " << progress <<" actual prg " <<(curlen/lengthF)<<"\n";
+            onPrograsessChangeSlot(progress);
+            std::string status = " processing TS packet # "+std::to_string(curlen/TS_PACKET_SIZE);
+            emit onStatusChange(status.c_str());
             if(payload[0] == SYNC_BYTE){
                 uint8_t transport_error_indicator = (uint8_t)((payload[1]&0x80) >>7)&0x01;
                 uint8_t payload_unit_start_indicator = (uint8_t)((payload[1]&0x40) >>6)&0x01;

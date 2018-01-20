@@ -79,6 +79,10 @@ public:
 signals:
     void ChannelsInstance(ProgrammeInfo p);
     void FreqInstance(FreqInfo f);
+    void onNetworkNameChange(QString name);
+    void onPrograsessChange(double size);
+    void onStatusChange(QString status);
+
 public slots:
     void ChannelsInstanceSlot(ProgrammeInfo p){
         qDebug() << "got signal for pid *******"<< p.PROGID << "emiting ";
@@ -87,6 +91,16 @@ public slots:
     void FreqInstanceSlot(FreqInfo f){
             qDebug() << "got signal for freq *******"<< f.Frequency << "emiting ";
         emit FreqInstance(f);
+    };
+    void onNetworkNameChangeSlot(QString name){
+        emit onNetworkNameChange(name);
+    };
+    void onPrograsessChangeSlot(double size){
+       // qDebug() << "got signal fro progress  *******"<< size << "emiting ";
+     emit onPrograsessChange(size);
+    };
+    void onStatusChangeSlot(QString status){
+        emit onStatusChange(status);
     };
 };
 

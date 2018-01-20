@@ -129,7 +129,8 @@ ApplicationWindow {
                 iconSource: "images/play.png"
                 onClicked: {
                     console.log( text+" button pressed  processing file ",fileSelected);
-                    csv.setSource(fileSelected);
+                    csv.setSource(fileSelected)
+                   // ctrlr.start(fileSelected);
                 }
             }
 
@@ -600,16 +601,39 @@ ApplicationWindow {
             spacing: 10
             anchors.margins: margin
             Label {
+                id:stlbl
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: "Ready..."
             }
             ProgressBar {
+                id:stpgbar
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 value: 10
+
             }
         }
+    }
+     Connections {
+    /*For exposing signals from C++ Object you must follow some naming conventions:
+
+Signal must begin by a lowercase letter in your C++ code, i.e void yourLongSignal()
+Signal handler in QML will be named on<YourLongSignal>
+*/
+      target: csv
+        onNetworkNameChange:{
+    //console.log("Received in QML from C++: " + name)
+     groupOne.title=name;
+      }
+     onPrograsessChange:{
+    //console.log("Received in QML from C++: " + size)
+    stpgbar.setValue(size/100)
+    }
+    //onStatusChange:{
+    //console.log("Received in QML from C++: " + status)
+    //stlbl.text=status
+    //  }
     }
     /*MouseArea {
         id: mouse_area1

@@ -5,19 +5,20 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    ptr(new csvdata)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     progressbar = new  QProgressBar;
     label = new QLabel;
 
     label->setText("Ready ....");
+    progressbar->setRange(1,100);
+    progressbar->setValue(50);
     ui->statusBar->addPermanentWidget(label,2);
 
     ui->statusBar->addPermanentWidget(progressbar,2);
-    ui->listView->setModel(&ptr->tChannel);
-    ui->listView_2->setModel(&ptr->tParams);
+    ui->listView->setModel(&ptr.tChannel);
+    ui->listView_2->setModel(&ptr.tParams);
     ui->textEdit->setReadOnly(true);
 }
 
@@ -40,10 +41,30 @@ void MainWindow::on_actionOpen_TS_triggered()
     QUrl furl = QFileDialog::getOpenFileUrl(this,tr("open ts"),durl,tr("TS files (*.ts *.TS)"));
     qDebug() << furl.fileName();
     label->setText("Processing .....");
-    ptr->setSource(furl.path().replace("\\\\\\",""));
-  if(ptr->NetworkName.size())
-    ui->groupBox->setTitle(ptr->NetworkName);
-    //label->setText("Ready ....");
+    //ptr->setSource(furl.path().replace("\\\\\\",""));
+    //if(ptr->NetworkName.size())
+    if(parser){
+        disconnect(thread,&QThread::finished,parser,&parser_thread::deleteLater);
+        disconnect(thread,&QThread::started,parser,&parser_thread::Parse);
+        disconnect(&ptr,&csvdata::networkNameChange,this,&MainWindow::onNetworkNameChange);
+        disconnect(&ptr,&csvdata::prograsessChange,this,&MainWindow::onPrograsessChange);
+        disconnect(&ptr,&csvdata::statusChange,this,&MainWindow::onStatusChange);
+        delete parser;
+    }
+    if(thread){
+        thread->quit();
+        delete thread;
+    }
+    thread = new QThread();
+
+    parser = new parser_thread(furl.path().replace("\\\\\\",""),ptr);
+    parser->moveToThread(thread);
+    connect(thread,&QThread::finished,parser,&parser_thread::deleteLater);
+    connect(thread,&QThread::started,parser,&parser_thread::Parse);
+    connect(&ptr,&csvdata::networkNameChange,this,&MainWindow::onNetworkNameChange);
+    connect(&ptr,&csvdata::prograsessChange,this,&MainWindow::onPrograsessChange);
+    connect(&ptr,&csvdata::statusChange,this,&MainWindow::onStatusChange);
+    thread->start();
 }
 
 void MainWindow::on_actionEnable_SDT_Other_triggered()
@@ -120,6 +141,23 @@ void MainWindow::on_listView_clicked(const QModelIndex &index)
         content = "<b>Unable to show channel information </b>";
     }
     ui->textEdit->setHtml(content);
+}
+
+void MainWindow::onNetworkNameChange(QString name)
+{
+    ui->groupBox->setTitle(name);
+
+}
+
+void MainWindow::onPrograsessChange(double size)
+{
+    //qDebug() <<" progress " << size;
+    progressbar->setValue(size);
+}
+
+void MainWindow::onStatusChange(QString status)
+{
+    label->setText(status);
 }
 
 void MainWindow::on_listView_2_clicked(const QModelIndex &index)

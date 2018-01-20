@@ -8,11 +8,12 @@
 #include <QStandardPaths>
 #include <QDebug>
 #include <QScopedPointer>
-
+#include <QThread>
 #include <QLabel>
 
 #include "csvdata.h"
 #include "fileparser.h"
+#include "parser_thread.h"
 
 namespace Ui {
 class MainWindow;
@@ -44,11 +45,16 @@ private slots:
     
     void on_listView_clicked(const QModelIndex &index);
     
+    void onNetworkNameChange(QString name);
+    void onPrograsessChange(double size);
+    void onStatusChange(QString status);
 private:
     Ui::MainWindow *ui;
     QProgressBar *progressbar;
     QLabel *label;
-    QScopedPointer<csvdata> ptr;
+    csvdata ptr;
+    QThread *thread;
+    parser_thread *parser;
 };
 
 #endif // MAINWINDOW_H

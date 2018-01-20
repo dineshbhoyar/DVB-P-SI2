@@ -31,6 +31,8 @@
 #include <QtQuick/QQuickView>
 
 #include "csvdata.h"
+#include "controller.h"
+
 int main(int argc, char *argv[])
 {
 
@@ -42,12 +44,12 @@ int main(int argc, char *argv[])
 #else
     QGuiApplication app(argc, argv);
     QScopedPointer<csvdata> data (new csvdata);
-    TuningParametrModel tParams;
+   // TuningParametrModel tParams;
 //    tParams.addTuningParametr(TuningParametr("64","306","6900","0"));
 //    tParams.addTuningParametr(TuningParametr("256","330","6875","0"));
 //    tParams.addTuningParametr(TuningParametr("256","338","6875","0"));
 //    tParams.addTuningParametr(TuningParametr("256","346","6875","0"));
-    ChannelInfoModel tChannel;
+   // ChannelInfoModel tChannel;
 //    QString chdata[] ={"DD NEWS,256,362,6900,0,1285,1794,502,502,41,MPEG2,MPEG2,62,1,5,1,42833,eng,digital television service,running",
 //                       "DD LOKSABHA,256,362,6900,0,1286,1446,1286,1286,1462,MPEG2,MPEG2,63,1,5,1,42833,N/A,digital television service,running",
 //                       "DD RAJYASABHA,256,362,6900,0,1287,1447,1287,1287,1463,MPEG2,MPEG2,64,1,5,1,42833,eng,digital television service,running",
@@ -100,8 +102,9 @@ int main(int argc, char *argv[])
 //        }
 //    }
     QQmlApplicationEngine engine;
-
+   // controller ctrlr(*data.data());
     engine.rootContext()->setContextProperty("csv",data.data());
+    //engine.rootContext()->setContextProperty("ctrlr",&ctrlr);
     engine.rootContext()->setContextProperty("tParams",&data->tParams);
     engine.rootContext()->setContextProperty("tChannel",&data->tChannel);
 

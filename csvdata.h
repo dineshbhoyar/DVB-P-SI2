@@ -302,14 +302,21 @@ public:
     explicit csvdata(QObject *parent = nullptr);
 
     Q_INVOKABLE void setSource(QString filepath);
+
     //Q_INVOKABLE QAbstractItemModel &theModel();
     bool dataReady() const;
     void setDataReady(const bool &value);
 signals:
     void dataReadyChanged();
+    void networkNameChange(QString name);
+    void prograsessChange(double size);
+    void statusChange(QString status);
 public slots:
     void ChannelsInstanceSlot(ProgrammeInfo p);
     void FreqInstanceSlot(FreqInfo f);
+    void onNetworkNameChangeSlot(QString name);
+    void onPrograsessChangeSlot(double size);
+    void onStatusChangeSlot(QString status);
 };
 
 class FilterSortModel : public QSortFilterProxyModel
@@ -322,5 +329,7 @@ public:
 
     Q_INVOKABLE void setSortOrder(bool checked);
 };
+
+
 
 #endif // CSVDATA_H

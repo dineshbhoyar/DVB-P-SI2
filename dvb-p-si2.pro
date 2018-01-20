@@ -15,7 +15,9 @@ SOURCES += main.cpp \
     nativeui/mainwindow.cpp\
     DVB/dvb_section.cpp \
     DVB/utils.cpp \
-    DVB/tables.cpp
+    DVB/tables.cpp \
+    nativeui/parser_thread.cpp \
+    controller.cpp
 
 RESOURCES += qml.qrc
 ## Dinesh: comment following line while making tag release
@@ -55,7 +57,9 @@ HEADERS += \
     nativeui/mainwindow.h\
     DVB/dvb_section.hpp \
     DVB/tables.hpp \
-    DVB/utils.h
+    DVB/utils.h \
+    nativeui/parser_thread.h \
+    controller.h
 
 FORMS += \
         nativeui/mainwindow.ui

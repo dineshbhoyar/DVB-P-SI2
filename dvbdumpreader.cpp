@@ -67,10 +67,20 @@ void DVBDumpReader::ParseFile(){
     toOpen.close();
 #else
     std::ifstream InFile(toOpen.fileName().toStdString(),std::ios::in | std::ios::binary );
+    InFile.seekg(0, std::ios::end);
+    size_t     lengthF = InFile.tellg();
+    InFile.seekg(0, std::ios::beg);
+
     while (!InFile.eof()){
         memset(buff,'\0',sizeof(buff));
         InFile.read((char*)&buff, 4);
+        size_t curlen = InFile.tellg();
+        size_t prgress = (curlen/lengthF)*100;
         uint16_t sec_len = (uint16_t)((buff[1] &0x0f)<< 8 | (buff[2]&0xff)) ;
+        emit onPrograsessChange(prgress);
+        std::string status = " processing packet "+std::to_string(curlen/sec_len);
+        emit onStatusChange(status.c_str());
+
         std::cout << "\nsection length : "
                   << sec_len << " "
                   << std::hex
@@ -120,7 +130,7 @@ void DVBDumpReader::ParseMemory(unsigned char*buff, uint32_t len, FileParser *bp
         if(container.nitActual.nit_descriptor.network_name.size()){
 
                 NetworkName = container.nitActual.nit_descriptor.network_name;
-
+                emit onNetworkNameChange(NetworkName.c_str());
         }
         for (auto  &ts_descriptor : container.nitActual.ts_descriptor ){
 
