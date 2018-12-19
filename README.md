@@ -30,3 +30,7 @@ This project have been tested on Windows 10 and Ubuntu 16.04 platform's, Feel fr
 2. Tested with Qt Creator 4.3.1 .
 3. C++ 11 or higher will works fine.
 
+```
+$sudo apt-get install  qt5-qmake qt5-default qtdeclarative5-dev 
+ 
+```
