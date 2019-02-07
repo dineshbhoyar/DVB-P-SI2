@@ -9,7 +9,7 @@ A C++11 , Qt-5 and QTQuick based software for parsing DVB information form
 
 
 
-*Sample Transport stream can be obtained from internet just search for the in Google*
+*Sample Transport stream can be obtained from internet just search for them in Google*
 
 ---
 
